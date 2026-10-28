@@ -1,0 +1,84 @@
+# Lint configuration for trends_real_estate_service.
+#
+# Scoped to this service on purpose: the sibling services carry between 144 and
+# 294 findings under the same rules, and pinning a ruleset at the repo root
+# would fail their builds for changes nobody has agreed to. Ruff picks the
+# nearest config to each file, so this governs only what is below it.
+#
+# Pinned rather than left on defaults so the set does not move under a ruff
+# upgrade and turn a green tree red without anyone changing code.
+
+line-length = 120
+target-version = "py310"
+
+[lint]
+select = [
+    "E",      # pycodestyle
+    "F",      # pyflakes - undefined names, unused imports, shadowing
+    "I",      # import sorting
+    "UP",     # pyupgrade
+    "B",      # bugbear
+    "SIM",    # simplify
+    "S",      # bandit
+    "DTZ",    # naive datetimes
+    "ISC",    # implicit string concatenation
+    "TRY",    # exception antipatterns
+    "FURB",   # modernisation
+    "BLE",    # blind except
+]
+
+ignore = [
+    # FastAPI's dependency injection IS a function call in a default argument:
+    # `user = Depends(get_current_user)`, `limit = Query(20, le=100)`. There is
+    # no other way to declare a dependency, and every route has at least one.
+    "B008",
+
+    # The prompt and tool-description strings are written as adjacent literals
+    # across several lines inside tuples and dicts. Ruff wants them
+    # parenthesised; the surrounding style is consistent and the strings are
+    # long enough that extra parens hurt more than they help. Note this is
+    # ISC004 only - the rules that catch a genuinely missing comma stay on.
+    "ISC004",
+
+    # Catching Exception is deliberate in this service and the reason is written
+    # at each site: a trend stage, an enrichment node or a health probe must
+    # degrade rather than abort a batch that has already spent money. Every one
+    # of them logs. The API handlers funnel through api/errors.internal_error,
+    # which logs the traceback and returns a fixed body.
+    "BLE001",
+
+    # TRY003 wants exception messages moved into custom classes. The messages
+    # here are one-off and read better at the raise site.
+    "TRY003",
+
+    # Every query flagged here interpolates only module-level constants -
+    # column lists, table names, a fixed dedup subquery. Reviewed site by site;
+    # all user and row values bind as parameters. Ruff cannot see the
+    # difference between an f-string built from a literal and one built from
+    # input, so this would be 23 permanent false positives.
+    "S608",
+
+    # A `return` inside `try` is the readable form here: the alternative is an
+    # `else:` block that separates the return from the call it belongs to.
+    "TRY300",
+
+    # Raising inside `try` is deliberate where the same handler is meant to
+    # catch it and convert it to a response.
+    "TRY301",
+]
+
+[lint.per-file-ignores]
+# Tests construct naive datetimes on purpose - asserting that _to_iso attaches
+# UTC is the point of the test - and use assert freely.
+"tests/**" = ["DTZ001", "S101"]
+
+# These three files are mostly long string literals rather than code: the
+# model-facing Field descriptions and prompts, and the fixture DDL. Rewrapping
+# tuned prompt text to satisfy a column limit is churn with a real risk of
+# changing what the model reads, for no readability gain.
+"app/enrichment/schema.py" = ["E501"]
+"app/trends/prompts.py" = ["E501"]
+"tests/db/conftest.py" = ["E501"]
+
+[lint.isort]
+known-first-party = ["services", "shared", "gateway"]
