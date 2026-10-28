@@ -1,0 +1,70 @@
+name: Deploy to ECS
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: price-scraper
+  ECS_CLUSTER: price-scraper
+  ECS_TASK_FAMILY: price-scraper
+  EXECUTION_ROLE_ARN: arn:aws:iam::123456789012:role/price-scraper-execution-role
+  TASK_ROLE_ARN: arn:aws:iam::123456789012:role/price-scraper-task-role
+  APP_CONFIG_SECRET_ARN: arn:aws:secretsmanager:us-east-1:123456789012:secret:price-scraper/app-config-XXXXXX
+  SUBNET_IDS: subnet-0bbcb1bdbf7b7d74c,subnet-053421bd34c652171,subnet-014b519183487c1b5
+  SECURITY_GROUP_ID: sg-0a3b96e10604e9202
+  SCHEDULE_ROLE_ARN: arn:aws:iam::123456789012:role/price-scraper-scheduler-role
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/price-scraper-github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push image
+        env:
+          REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+        run: |
+          docker build -t "$REGISTRY/$ECR_REPOSITORY:${{ github.sha }}" -t "$REGISTRY/$ECR_REPOSITORY:latest" .
+          docker push "$REGISTRY/$ECR_REPOSITORY:${{ github.sha }}"
+          docker push "$REGISTRY/$ECR_REPOSITORY:latest"
+
+      - name: Register new task definition
+        env:
+          REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+        run: |
+          sed \
+            -e "s#__IMAGE_URI__#${REGISTRY}/${ECR_REPOSITORY}:${{ github.sha }}#g" \
+            -e "s#__EXECUTION_ROLE_ARN__#${EXECUTION_ROLE_ARN}#g" \
+            -e "s#__TASK_ROLE_ARN__#${TASK_ROLE_ARN}#g" \
+            -e "s#__AWS_REGION__#${AWS_REGION}#g" \
+            -e "s#__APP_CONFIG_SECRET_ARN__#${APP_CONFIG_SECRET_ARN}#g" \
+            deploy/task-definition.json > /tmp/task-definition.json
+          aws ecs register-task-definition --cli-input-json file:///tmp/task-definition.json
+
+      - name: Point weekly schedule at the new task definition revision
+        run: |
+          TASK_DEF_ARN=$(aws ecs describe-task-definition --task-definition "$ECS_TASK_FAMILY" \
+            --query 'taskDefinition.taskDefinitionArn' --output text)
+          SUBNETS_JSON=$(echo "$SUBNET_IDS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++){printf "\"%s\"%s", $i, (i<NF?",":"")}; printf "]"}')
+          aws scheduler update-schedule \
+            --name price-scraper-weekly \
+            --schedule-expression "cron(0 21 ? * TUE *)" \
+            --schedule-expression-timezone "Asia/Kolkata" \
+            --flexible-time-window '{"Mode": "OFF"}' \
+            --target "{\"Arn\": \"arn:aws:ecs:${AWS_REGION}:123456789012:cluster/${ECS_CLUSTER}\", \"RoleArn\": \"${SCHEDULE_ROLE_ARN}\", \"EcsParameters\": {\"TaskDefinitionArn\": \"${TASK_DEF_ARN}\", \"LaunchType\": \"FARGATE\", \"NetworkConfiguration\": {\"awsvpcConfiguration\": {\"Subnets\": ${SUBNETS_JSON}, \"SecurityGroups\": [\"${SECURITY_GROUP_ID}\"], \"AssignPublicIp\": \"ENABLED\"}}}}"

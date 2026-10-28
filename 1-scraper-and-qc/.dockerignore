@@ -1,0 +1,7 @@
+.git
+logs
+output
+*.xlsx
+__pycache__
+*.pyc
+.env

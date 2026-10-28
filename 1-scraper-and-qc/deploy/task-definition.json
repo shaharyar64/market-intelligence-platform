@@ -1,0 +1,42 @@
+{
+  "family": "price-scraper",
+  "requiresCompatibilities": ["FARGATE"],
+  "networkMode": "awsvpc",
+  "cpu": "1024",
+  "memory": "3072",
+  "executionRoleArn": "__EXECUTION_ROLE_ARN__",
+  "taskRoleArn": "__TASK_ROLE_ARN__",
+  "containerDefinitions": [
+    {
+      "name": "price-scraper",
+      "image": "__IMAGE_URI__",
+      "essential": true,
+      "environment": [
+        { "name": "AWS_REGION", "value": "__AWS_REGION__" },
+        { "name": "DB_HOST", "value": "db.example.internal" },
+        { "name": "DB_PORT", "value": "5432" },
+        { "name": "SECRET_NAME", "value": "rds!db-51e88f8f-a105-4800-896f-9ef6a7e45725" },
+        { "name": "REPORT_SENDER_EMAIL", "value": "noreply@example.com" },
+        { "name": "REPORT_RECIPIENTS", "value": "reports@example.com" }
+      ],
+      "secrets": [
+        { "name": "OPENAI_API_KEY", "valueFrom": "__APP_CONFIG_SECRET_ARN__:OPENAI_API_KEY::" },
+        { "name": "QC_MODEL", "valueFrom": "__APP_CONFIG_SECRET_ARN__:QC_MODEL::" },
+        { "name": "DISCORD_WEBHOOK_URL", "valueFrom": "__APP_CONFIG_SECRET_ARN__:DISCORD_WEBHOOK_URL::" },
+        { "name": "PROXY_SERVER", "valueFrom": "__APP_CONFIG_SECRET_ARN__:PROXY_SERVER::" },
+        { "name": "PROXY_USERNAME", "valueFrom": "__APP_CONFIG_SECRET_ARN__:PROXY_USERNAME::" },
+        { "name": "PROXY_PASSWORD", "valueFrom": "__APP_CONFIG_SECRET_ARN__:PROXY_PASSWORD::" },
+        { "name": "WEBSHARE_API_KEY", "valueFrom": "__APP_CONFIG_SECRET_ARN__:WEBSHARE_API_KEY::" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/price-scraper",
+          "awslogs-region": "__AWS_REGION__",
+          "awslogs-stream-prefix": "price-scraper",
+          "awslogs-create-group": "true"
+        }
+      }
+    }
+  ]
+}
