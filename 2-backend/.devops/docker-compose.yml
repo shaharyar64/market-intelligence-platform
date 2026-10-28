@@ -1,0 +1,435 @@
+name: dashboards-backend
+
+services:
+  redis-secure:
+    image: redis:8.10.1
+    container_name: redis-secure
+    env_file:
+      - ../.env
+    command: sh -c 'redis-server --requirepass "$$REDIS_PASSWORD" --appendonly yes'
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  gateway:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-gateway:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: gateway
+    command: python -m uvicorn gateway.app.main:app --host 0.0.0.0 --port 8000
+    env_file:
+      - ../.env
+    environment:
+      HORECA_SERVICE_URL: http://horeca:8003
+      EV_SERVICE_URL: http://ev:8002
+      BANK_SPATIAL_SERVICE_URL: http://bankspatial:8001
+      BEER_CIDER_SERVICE_URL: http://beer:8004
+      DIGITAL_BRAND_HEALTH_SERVICE_URL: http://digital:8005
+      DATA_SCRAPING_SERVICE_URL: http://scraping:8006
+      REAL_ESTATE_SERVICE_URL: http://real-estate:8007
+      FOOD_INTELLIGENCE_SERVICE_URL: http://food:8008
+      SAUDI_REAL_ESTATE_SERVICE_URL: http://saudi-real-estate:8009
+      TRENDS_REAL_ESTATE_SERVICE_URL: http://trends-real-estate:8010
+      BANK_BRAND_HEALTH_SERVICE_URL: http://bank-brand-health:8011
+      CEER_CAMPAIGN_SERVICE_URL: http://ceer-campaign:8012
+      UAE_BANK_BRAND_HEALTH_SERVICE_URL: http://uae-bank-brand-health:8013
+      REDIS_HOST: redis-secure:6379
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis-secure
+      - bankspatial
+      - ev
+      - horeca
+      - beer
+      - digital
+      - scraping
+      - real-estate
+      - food
+      - saudi-real-estate
+      - trends-real-estate
+      - bank-brand-health
+      - ceer-campaign
+      - uae-bank-brand-health
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  bankspatial:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-bankspatial:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: services/bankspatial_service
+    command: python -m uvicorn services.bankspatial_service.app.main:app --host 0.0.0.0 --port 8001
+    env_file:
+      - ../.env
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  ev:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-ev:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: services/ev_service
+    command: python -m uvicorn services.ev_service.app.main:app --host 0.0.0.0 --port 8002
+    env_file:
+      - ../.env
+    ports:
+      - "8002:8002"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  horeca:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-horeca:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: services/horeca_service
+    command: python -m uvicorn services.horeca_service.app.main:app --host 0.0.0.0 --port 8003
+    env_file:
+      - ../.env
+    ports:
+      - "8003:8003"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  beer:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-beer:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: services/beer_cider_pricing_service
+    command: python -m uvicorn services.beer_cider_pricing_service.app.main:app --host 0.0.0.0 --port 8004
+    env_file:
+      - ../.env
+    environment:
+      REDIS_HOST: redis-secure:6379
+    ports:
+      - "8004:8004"
+    depends_on:
+      - redis-secure
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8004/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  digital:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-digital:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: services/digital_brand_health
+    command: python -m uvicorn services.digital_brand_health.app.main:app --host 0.0.0.0 --port 8005
+    env_file:
+      - ../.env
+    ports:
+      - "8005:8005"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8005/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  scraping:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-scraping:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: services/data_scraping_service
+    command: python -m uvicorn services.data_scraping_service.app.main:app --host 0.0.0.0 --port 8006
+    env_file:
+      - ../.env
+    environment:
+      REDIS_HOST: redis-secure:6379
+    ports:
+      - "8006:8006"
+    depends_on:
+      - redis-secure
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8006/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  real-estate:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-real-estate:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: services/real_estate_service
+    command: python -m uvicorn services.real_estate_service.app.main:app --host 0.0.0.0 --port 8007
+    env_file:
+      - ../.env
+    ports:
+      - "8007:8007"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8007/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  food:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-food:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: services/food_intelligence_service
+        EXTRA_REQUIREMENTS_FILE: requirements-food.txt
+        INSTALL_BUILD_TOOLS: "true"
+    command: python -m uvicorn services.food_intelligence_service.app.main:app --host 0.0.0.0 --port 8008
+    env_file:
+      - ../.env
+    ports:
+      - "8008:8008"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8008/api/v1/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  saudi-real-estate:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-saudi-real-estate:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: services/saudi_real_estate_service
+    command: python -m uvicorn services.saudi_real_estate_service.app.main:app --host 0.0.0.0 --port 8009
+    env_file:
+      - ../.env
+    ports:
+      - "8009:8009"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8009/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  trends-real-estate:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-trends-real-estate:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: services/trends_real_estate_service
+        EXTRA_REQUIREMENTS_FILE: requirements-food.txt
+        INSTALL_BUILD_TOOLS: "true"
+    command: python -m uvicorn services.trends_real_estate_service.app.main:app --host 0.0.0.0 --port 8010
+    env_file:
+      - ../.env
+    ports:
+      - "8010:8010"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8010/api/v1/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  bank-brand-health:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-bank-brand-health:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: services/bank_brand_health
+    command: python -m uvicorn services.bank_brand_health.app.main:app --host 0.0.0.0 --port 8011
+    env_file:
+      - ../.env
+    ports:
+      - "8011:8011"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8011/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  uae-bank-brand-health:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-uae-bank-brand-health:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: services/uae_bank_brand_health
+    command: python -m uvicorn services.uae_bank_brand_health.app.main:app --host 0.0.0.0 --port 8013
+    env_file:
+      - ../.env
+    ports:
+      - "8013:8013"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8013/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  ceer-campaign:
+    platform: linux/arm64
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_PREFIX:-dashboards-backend}-ceer-campaign:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .devops/Dockerfile
+      args:
+        SERVICE_DIR: services/ceer_campaign_service
+    command: python -m uvicorn services.ceer_campaign_service.app.main:app --host 0.0.0.0 --port 8012
+    env_file:
+      - ../.env
+    ports:
+      - "8012:8012"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8012/api/v1/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  redis-data:
+    external: true

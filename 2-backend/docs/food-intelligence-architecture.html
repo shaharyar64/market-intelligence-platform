@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Food Intelligence - Architecture Flows</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#dce8f5",
+        primaryTextColor: "#111111",
+        primaryBorderColor: "#2c4a6e",
+        secondaryColor: "#e5f0e7",
+        tertiaryColor: "#f5f0e4",
+        lineColor: "#2c4a6e",
+        fontFamily: "IBM Plex Sans, Segoe UI, Arial, sans-serif",
+        fontSize: "18px",
+        actorBkg: "#dce8f5",
+        actorBorder: "#2c4a6e",
+        actorTextColor: "#111111",
+        signalColor: "#2c4a6e",
+        signalTextColor: "#111111",
+        noteBkgColor: "#f5f0e4",
+        noteTextColor: "#111111"
+      },
+      flowchart: {
+        curve: "basis",
+        htmlLabels: true,
+        nodeSpacing: 50,
+        rankSpacing: 60,
+        padding: 16,
+        wrappingWidth: 220
+      },
+      sequence: {
+        actorMargin: 48,
+        messageMargin: 40,
+        useMaxWidth: true
+      }
+    });
+  </script>
+  <style>
+    :root {
+      --bg: #f3efe6;
+      --ink: #111111;
+      --muted: #4a5563;
+      --card: #fffdf8;
+      --line: #c9c0b0;
+      --accent: #2f5d50;
+      --live: #2f6b4f;
+      --dummy: #9a6b2f;
+      --planned: #5b4d8a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at top left, #e7efe8 0%, transparent 45%),
+        radial-gradient(ellipse at bottom right, #e4ebf5 0%, transparent 40%),
+        var(--bg);
+      line-height: 1.55;
+      font-size: 16px;
+    }
+    header {
+      padding: 2.5rem 1.5rem 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header h1 {
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 600;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      margin: 0 0 0.4rem;
+      letter-spacing: -0.02em;
+    }
+    header p { margin: 0; color: var(--muted); max-width: 70ch; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    .pill {
+      font-size: 0.85rem; padding: 0.35rem 0.7rem;
+      border-radius: 999px; border: 1px solid var(--line);
+      background: var(--card);
+    }
+    .pill.live { border-color: var(--live); color: var(--live); }
+    .pill.dummy { border-color: var(--dummy); color: var(--dummy); }
+    .pill.planned { border-color: var(--planned); color: var(--planned); }
+    nav.toc {
+      max-width: 1200px; margin: 0 auto 2rem; padding: 0 1.5rem;
+      display: grid; gap: 0.4rem;
+    }
+    nav.toc a {
+      color: var(--accent); text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+    nav.toc a:hover { border-bottom-color: var(--accent); }
+    main { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.5rem 1.25rem 1.75rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 24px rgba(26, 35, 50, 0.04);
+    }
+    section h2 {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 1.4rem;
+      margin: 0 0 0.35rem;
+    }
+    section .lead { color: var(--muted); margin: 0 0 1rem; font-size: 1rem; }
+    .mermaid {
+      overflow-x: auto;
+      background: #faf8f3;
+      border-radius: 8px;
+      padding: 1.25rem;
+      border: 1px solid var(--line);
+      min-height: 280px;
+    }
+    .notes {
+      margin-top: 1rem;
+      padding: 0.9rem 1rem;
+      background: #f0ebe1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+    .notes ul { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+    figure { margin: 0; }
+    figcaption {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 1.05rem;
+    }
+    figure img {
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    footer {
+      max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 3rem;
+      color: var(--muted); font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Food Intelligence - End-to-End Architecture</h1>
+    <p>
+      How data moves from external scraping through enrichment, AI analysis,
+      Postgres storage, APIs, and the dashboard UI, including where images live
+      and what each AI node extracts.
+    </p>
+    <div class="legend">
+      <span class="pill live">Live in backend</span>
+      <span class="pill dummy">UI still dummy</span>
+      <span class="pill planned">Planned / not wired</span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <a href="#e2e">1. Full end-to-end flow detailed</a>
+    <a href="#images">2. Image lifecycle</a>
+    <a href="#graph">3. LangGraph 7-node agent</a>
+    <a href="#ai">4. What AI extracts and who consumes it</a>
+    <a href="#enrich-seq">5. Enrichment sequence</a>
+    <a href="#brand-seq">6. Brand Intelligence sequence</a>
+  </nav>
+
+  <main>
+    <section id="e2e">
+      <h2>1. Full end-to-end flow - single walkthrough diagram</h2>
+      <p class="lead">One diagram covering scrape, enrich decisions, all 7 AI nodes, food_intel save, APIs, UI live vs dummy, and what comes from where.</p>
+      <figure>
+        <img src="01-end-to-end-flow.png" alt="Full end-to-end Food Intelligence flow" />
+      </figure>
+      <div class="notes">
+        <strong>Shape legend:</strong>
+        <ul>
+          <li><strong>Cylinder</strong> = database / storage (Postgres, S3, food_intel)</li>
+          <li><strong>Parallelogram</strong> = input/output (scrapers, APIs, URLs)</li>
+          <li><strong>Rectangle</strong> = process step</li>
+          <li><strong>Rounded / subroutine</strong> = CLI entry or assemble step</li>
+          <li><strong>Diamond</strong> = decision</li>
+          <li><strong>Hexagon</strong> = AI node</li>
+          <li><strong>Pill / circle</strong> = UI screen or start/end</li>
+        </ul>
+        <strong>Walkthrough order:</strong>
+        <ul>
+          <li><strong>1 Scrape:</strong> external writers fill public Postgres tables and upload JPGs to S3.</li>
+          <li><strong>2 Enrich CLI:</strong> fetch brand posts, normalize, map brand, skip if done, resolve/presign image.</li>
+          <li><strong>3 LangGraph:</strong> 5 text nodes from caption + 2 vision nodes from image, then assemble.</li>
+          <li><strong>4 Save:</strong> food_intel.post_analysis JSONB plus theme/product facet tables and brand_profile.</li>
+          <li><strong>5 APIs:</strong> Brand endpoints live; visual gallery planned; some visual brand endpoints not wired in UI.</li>
+          <li><strong>6 UI:</strong> Brand Intelligence partially live; Trends / Visual / Persona / Overview still dummy.</li>
+          <li><strong>7 Sources:</strong> scraped vs AI text vs AI vision vs derived SQL facets.</li>
+        </ul>
+      </div>
+    </section>
+
+<section id="images">
+      <h2>2. Image lifecycle - when stored, when loaded</h2>
+      <p class="lead">Images exist before AI runs. Vision nodes load them only during enrichment (and later gallery APIs).</p>
+      <pre class="mermaid">
+flowchart TB
+  A1[/1. Scraper writes post row/]
+  A2[/1. Scraper uploads JPG to S3/]
+  B1[(2. Postgres public\nposts + profiles)]
+  B2[(2. S3 raw media)]
+  C1[3. Read post from Postgres]
+  C2[3. Resolve image_ref from S3]
+  C3{{3. AI text + vision analysis}}
+  C4[(3. Save analysis to food_intel)]
+  D1[/4. Brand / Visual APIs/]
+  D2([4. UI dashboards])
+  A1 --> B1 --> C1
+  A2 --> B2 --> C2
+  C1 --> C3
+  C2 --> C3
+  C3 --> C4 --> D1 --> D2
+      </pre>
+      <div class="notes">
+        <ul>
+          <li><strong>Stored:</strong> at scrape time in S3 (<code>raw-data-bucket</code>).</li>
+          <li><strong>Loaded for AI:</strong> during enrichment, after post fetch, at LangGraph run.</li>
+          <li><strong>Missing image:</strong> vision nodes return <code>skipped_no_image</code>; text nodes still run.</li>
+          <li><strong>TikTok:</strong> same key pattern assumed; confirm media exists before expecting visual coverage.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="graph">
+      <h2>3. LangGraph - 7 nodes in parallel, then assemble</h2>
+      <p class="lead">All analysis nodes fan out from START. Text never sees the image; vision never sees the caption.</p>
+      <pre class="mermaid">
+flowchart TB
+  START((START))
+  START --> D{{description\ncaption}}
+  START --> K{{keywords\ncaption}}
+  START --> ST{{semiotic_text\ncaption}}
+  START --> T{{themes\ncaption}}
+  START --> PF{{product_focus\ncaption}}
+  START --> FV{{functional_visual\nimage only}}
+  START --> SV{{semiotic_visual\nimage only}}
+  D --> ASM[[assemble]]
+  K --> ASM
+  ST --> ASM
+  T --> ASM
+  PF --> ASM
+  FV --> ASM
+  SV --> ASM
+  ASM --> ENDN((END))
+      </pre>
+    </section>
+
+    <section id="ai">
+      <h2>4. What AI extracts vs what APIs/UI use</h2>
+      <p class="lead">AI invents nothing about engagement or URLs; those are copied from scraped rows.</p>
+      <pre class="mermaid">
+flowchart TB
+  CAP[/Caption text/]
+  IMG[(S3 image)]
+  CAP --> D{{description + language}}
+  CAP --> K{{keywords}}
+  CAP --> ST{{semiotic text}}
+  CAP --> T{{themes + evidence}}
+  CAP --> PF{{product focus + evidence}}
+  IMG --> FV{{functional visual categories}}
+  IMG --> SV{{semiotic visual scores}}
+  T --> TH[/themes API\nBrand UI live/]
+  PF --> PR[/products API\nBrand UI live/]
+  ENG[(Engagement from scrape)] --> TC[/top-content API\nBrand UI live/]
+  FV --> FVAPI[/functional-visual API\nlive / UI dummy/]
+  SV --> SEM[/semiotic API\nlive / UI dummy/]
+  REF[(image_ref on row)] --> GAL[/gallery API\nplanned/]
+      </pre>
+      <div class="notes">
+        <ul>
+          <li><strong>Grounding:</strong> theme/product evidence must be a verbatim caption substring.</li>
+          <li><strong>Closed vocab (functional):</strong> product, ingredient, prepared_food, family, individual, in_home, out_of_home.</li>
+          <li><strong>Closed vocab (semiotic visual):</strong> premium, healthy, natural, modern, traditional, sophisticated, indulgent.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="enrich-seq">
+      <h2>5. Enrichment sequence - scrape data to saved analysis</h2>
+      <pre class="mermaid">
+sequenceDiagram
+  autonumber
+  actor Ops as Operator
+  participant CLI as enrichment.run
+  participant PG as Postgres public
+  participant S3 as S3 media
+  participant AG as LangGraph AI
+  participant LLM as OpenAI
+  participant FI as food_intel
+  Ops->>CLI: run platforms + limit
+  CLI->>PG: fetch brand posts
+  PG-->>CLI: post rows
+  loop Each post
+    CLI->>FI: already enriched?
+    CLI->>S3: HEAD media key
+    alt Image found
+      S3-->>CLI: image_ref
+      CLI->>S3: create presigned URL
+    else No image
+      Note over AG: vision nodes skipped
+    end
+    CLI->>AG: analyze_post
+    par Text nodes
+      AG->>LLM: caption fields
+      LLM-->>AG: description themes products
+    and Vision nodes
+      AG->>LLM: image fields
+      LLM-->>AG: visual + semiotic scores
+    end
+    AG-->>CLI: analysis + node_status
+    CLI->>FI: upsert analysis themes products
+  end
+  CLI-->>Ops: enrichment stats
+      </pre>
+    </section>
+
+    <section id="brand-seq">
+      <h2>6. Brand Intelligence - UI to API to store</h2>
+      <pre class="mermaid">
+sequenceDiagram
+  autonumber
+  actor User as User
+  participant UI as Brand Intelligence UI
+  participant API as food-intelligence API
+  participant FI as food_intel
+  User->>UI: open + select brand
+  UI->>API: GET /brands
+  API->>FI: list enriched brands
+  FI-->>UI: brand list
+  par Live panels
+    UI->>API: overview
+    API->>FI: aggregates
+    FI-->>UI: stats
+    UI->>API: themes
+    API->>FI: post_theme group by
+    FI-->>UI: communication themes
+    UI->>API: products
+    API->>FI: post_product group by
+    FI-->>UI: product focus
+    UI->>API: top-content
+    API->>FI: order by engagement
+    FI-->>UI: top posts
+  end
+  Note over UI,API: functional-visual and semiotic APIs exist but Brand UI still uses dummy data
+  Note over UI: Trends Visual Persona Overview are dummy today
+      </pre>
+    </section>
+  </main>
+
+  <footer>
+    Generated from the food_intelligence_service codebase and the visual-analysis pipeline plan.
+    Source diagrams also live as <code>.mmd</code> files beside this HTML.
+  </footer>
+</body>
+</html>

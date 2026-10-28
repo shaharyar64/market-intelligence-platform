@@ -1,0 +1,228 @@
+name: Build & Push to ECR
+
+on:
+  push:
+    branches: ["prod"]
+  workflow_dispatch:
+    inputs:
+      services:
+        description: 'Services to build+deploy: "all" or comma-separated (e.g. ev,food)'
+        default: all
+
+jobs:
+  changes:
+    # Decide which services need a rebuild. A service is affected by its own dir,
+    # shared/, and the Docker/requirements inputs (see .devops/Dockerfile).
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      matrix: ${{ steps.detect.outputs.matrix }}
+      services: ${{ steps.detect.outputs.services }}
+      has_builds: ${{ steps.detect.outputs.has_builds }}
+      deploy: ${{ steps.detect.outputs.deploy }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed services
+        id: detect
+        env:
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+          INPUT_SERVICES: ${{ inputs.services }}
+        run: |
+          # name|dir|requirements|build_tools
+          ALL='gateway|gateway|requirements-base.txt|false
+          bankspatial|services/bankspatial_service|requirements-base.txt|false
+          ev|services/ev_service|requirements-base.txt|false
+          horeca|services/horeca_service|requirements-base.txt|false
+          beer|services/beer_cider_pricing_service|requirements-base.txt|false
+          digital|services/digital_brand_health|requirements-base.txt|false
+          scraping|services/data_scraping_service|requirements-base.txt|false
+          real-estate|services/real_estate_service|requirements-base.txt|false
+          food|services/food_intelligence_service|requirements-food.txt|true
+          saudi-real-estate|services/saudi_real_estate_service|requirements-base.txt|false
+          trends-real-estate|services/trends_real_estate_service|requirements-food.txt|true
+          bank-brand-health|services/bank_brand_health|requirements-base.txt|false
+          uae-bank-brand-health|services/uae_bank_brand_health|requirements-base.txt|false
+          ceer-campaign|services/ceer_campaign_service|requirements-base.txt|false'
+
+          deploy=false
+          if [ -n "${INPUT_SERVICES}" ] && [ "${INPUT_SERVICES}" != "all" ]; then
+            wanted=",${INPUT_SERVICES// /},"
+            deploy=true
+          elif [ -n "${INPUT_SERVICES}" ] || [[ "${BEFORE}" =~ ^0+$ ]] || ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            wanted=all   # manual "all", new branch, or force-push: can't diff, rebuild everything
+            deploy=true
+          else
+            files=$(git diff --name-only "${BEFORE}" "${SHA}")
+            echo "Changed files:"; echo "${files}"
+            if echo "${files}" | grep -qE '^(shared/|requirements-base\.txt$|\.devops/Dockerfile$|\.dockerignore$|\.github/workflows/prod\.yaml$)'; then
+              wanted=all
+            else
+              wanted=,
+              while IFS='|' read -r name dir reqs tools; do
+                if echo "${files}" | grep -q "^${dir}/"; then wanted+="${name},"; fi
+                if [[ "${reqs}" == *requirements-food.txt* ]] && echo "${files}" | grep -qx 'requirements-food.txt'; then wanted+="${name},"; fi
+              done <<< "${ALL}"
+            fi
+            # compose-only change: no rebuild, but deploy still applies it
+            if [ "${wanted}" != "," ] || echo "${files}" | grep -q '^\.devops/docker-compose\.yml$'; then deploy=true; fi
+          fi
+
+          matrix='[]'; names=''
+          while IFS='|' read -r name dir reqs tools; do
+            if [ "${wanted}" = all ] || [[ "${wanted}" == *",${name},"* ]]; then
+              matrix=$(jq -c --arg n "${name}" --arg d "${dir}" --arg r "${reqs}" --arg t "${tools}" \
+                '. + [{service:$n, service_dir:$d, requirements_files:$r, install_build_tools:$t}]' <<< "${matrix}")
+              names+="${name} "
+            fi
+          done <<< "${ALL}"
+
+          echo "Services to build: ${names:-none}"
+          echo "matrix={\"include\":${matrix}}" >> "$GITHUB_OUTPUT"
+          echo "services=${names}" >> "$GITHUB_OUTPUT"
+          echo "has_builds=$([ "${matrix}" != '[]' ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "deploy=${deploy}" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: changes
+    if: needs.changes.outputs.has_builds == 'true'
+    # Native arm64 (not ubuntu-latest + QEMU): building for linux/arm64 under QEMU
+    # emulation makes compiling C/Cython extensions (e.g. hdbscan for the food
+    # service) pathologically slow — native cuts it from 24+ minutes to under one.
+    runs-on: ubuntu-24.04-arm
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.changes.outputs.matrix) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Derive ECR registry and repo prefix
+        run: |
+          ECR_REGISTRY="${{ secrets.ECR_REPO_URI }}"
+          ECR_REGISTRY="${ECR_REGISTRY%/}"
+          ECR_REPO_NAME="dashboards-backend"
+
+          if [ -z "${ECR_REGISTRY}" ]; then
+            echo "ECR_REPO_URI secret is empty (expected registry like 123456789012.dkr.ecr.us-east-1.amazonaws.com)"
+            exit 1
+          fi
+
+          if [[ "${ECR_REGISTRY}" == *"/"* ]]; then
+            echo "ECR_REPO_URI should contain only registry hostname, got: ${ECR_REGISTRY}"
+            exit 1
+          fi
+
+          echo "ECR_REGISTRY=${ECR_REGISTRY}" >> "$GITHUB_ENV"
+          echo "ECR_REPO_PREFIX=${ECR_REPO_NAME}" >> "$GITHUB_ENV"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Validate ECR repo exists
+        run: |
+          REPO_NAME="${ECR_REPO_PREFIX}-${{ matrix.service }}"
+          if [ -z "${REPO_NAME}" ] || [ "${REPO_NAME}" = "-${{ matrix.service }}" ]; then
+            echo "Invalid repo name derived from ECR_REPO_PREFIX='${ECR_REPO_PREFIX}'"
+            exit 1
+          fi
+          aws ecr describe-repositories --repository-names "${REPO_NAME}" >/dev/null
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .devops/Dockerfile
+          push: true
+          build-args: |
+            SERVICE_DIR=${{ matrix.service_dir }}
+            EXTRA_REQUIREMENTS_FILE=${{ matrix.requirements_files }}
+            INSTALL_BUILD_TOOLS=${{ matrix.install_build_tools }}
+          tags: |
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_PREFIX }}-${{ matrix.service }}:prod
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_PREFIX }}-${{ matrix.service }}:${{ github.sha }}
+          platforms: linux/arm64
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+          provenance: false
+
+  deploy:
+    runs-on: [self-hosted, prod]
+    needs: [changes, build]
+    # build is skipped (not failed) when only compose config changed
+    if: ${{ !cancelled() && needs.changes.outputs.deploy == 'true' && needs.build.result != 'failure' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Derive ECR registry and repo prefix
+        run: |
+          ECR_REGISTRY="${{ secrets.ECR_REPO_URI }}"
+          ECR_REGISTRY="${ECR_REGISTRY%/}"
+          ECR_REPO_NAME="dashboards-backend"
+
+          if [ -z "${ECR_REGISTRY}" ]; then
+            echo "ECR_REPO_URI secret is empty (expected registry like 123456789012.dkr.ecr.us-east-1.amazonaws.com)"
+            exit 1
+          fi
+
+          if [[ "${ECR_REGISTRY}" == *"/"* ]]; then
+            echo "ECR_REPO_URI should contain only registry hostname, got: ${ECR_REGISTRY}"
+            exit 1
+          fi
+
+          echo "ECR_REGISTRY=${ECR_REGISTRY}" >> "$GITHUB_ENV"
+          echo "ECR_REPO_PREFIX=${ECR_REPO_NAME}" >> "$GITHUB_ENV"
+          echo "IMAGE_TAG=prod" >> "$GITHUB_ENV"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Fetch runtime env from Secrets Manager
+        run: |
+          aws secretsmanager get-secret-value \
+            --secret-id prod-dashboard-env \
+            --query SecretString \
+            --output text > .env
+
+      - name: Pull prod images
+        run: |
+          # Only changed services: unchanged ones keep their local image, so
+          # `compose up` below leaves their containers running untouched.
+          for service in ${{ needs.changes.outputs.services }}; do
+            docker pull "${ECR_REGISTRY}/${ECR_REPO_PREFIX}-${service}:${IMAGE_TAG}"
+          done
+
+      - name: Deploy with Docker Compose
+        run: |
+          docker compose -f .devops/docker-compose.yml up -d --no-build --remove-orphans
+
+      - name: Clean up old Docker images
+        run: |
+          # image prune only removes images unused by any container, and
+          # container prune only removes stopped containers, so anything
+          # still running on this host outside this compose project
+          # (e.g. secure-redis) is never touched.
+          docker image prune -af --filter "until=24h"
+          docker container prune -f --filter "until=24h"

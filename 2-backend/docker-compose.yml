@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  api_gateway:
+    build: .
+    working_dir: /app/services/api_gateway/app
+    environment:
+      PYTHONPATH: /app/services/api_gateway/app
+    command: >
+      uvicorn main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+    ports:
+      - "8000:8000"
+    env_file: .env
+    volumes:
+      - ./services/api_gateway:/app/services/api_gateway
+    restart: unless-stopped
+
+  user_service:
+    build: .
+    working_dir: /app/services/user_service/app
+    environment:
+      PYTHONPATH: /app/services/user_service/app
+    command: >
+      uvicorn main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+    env_file: .env
+    volumes:
+      - ./services/user_service:/app/services/user_service
+    restart: unless-stopped
+
+  data_scraping_service:
+    build: .
+    working_dir: /app
+    command: >
+      uvicorn services.data_scraping_service.app.main:app
+      --host 0.0.0.0
+      --port 8006
+      --reload
+    ports:
+      - "8006:8006"
+    env_file: .env
+    volumes:
+      - ./services/data_scraping_service:/app/services/data_scraping_service
+    restart: unless-stopped
+
+
+

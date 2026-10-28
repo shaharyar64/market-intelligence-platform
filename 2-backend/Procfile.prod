@@ -1,0 +1,14 @@
+gateway: python -m uvicorn gateway.app.main:app --host 0.0.0.0 --port 8000
+bankspatial: python -m uvicorn services.bankspatial_service.app.main:app --host 0.0.0.0 --port 8001
+ev: python -m uvicorn services.ev_service.app.main:app --host 0.0.0.0 --port 8002
+horeca: python -m uvicorn services.horeca_service.app.main:app --host 0.0.0.0 --port 8003
+beer: python -m uvicorn services.beer_cider_pricing_service.app.main:app --host 0.0.0.0 --port 8004
+digital: python -m uvicorn services.digital_brand_health.app.main:app --host 0.0.0.0 --port 8005
+scraping: python -m uvicorn services.data_scraping_service.app.main:app --host 0.0.0.0 --port 8006
+real-estate: python -m uvicorn services.real_estate_service.app.main:app --host 0.0.0.0 --port 8007
+food: python -m uvicorn services.food_intelligence_service.app.main:app --host 0.0.0.0 --port 8008
+saudi-real-estate: python -m uvicorn services.saudi_real_estate_service.app.main:app --host 0.0.0.0 --port 8009
+trends-real-estate: python -m uvicorn services.trends_real_estate_service.app.main:app --host 0.0.0.0 --port 8010
+bank-brand-health: python -m uvicorn services.bank_brand_health.app.main:app --host 0.0.0.0 --port 8011
+uae-bank-brand-health: python -m uvicorn services.uae_bank_brand_health.app.main:app --host 0.0.0.0 --port 8013
+ceer-campaign: python -m uvicorn services.ceer_campaign_service.app.main:app --host 0.0.0.0 --port 8012

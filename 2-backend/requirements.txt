@@ -1,0 +1,6 @@
+# Full local dev install (all services). CI/deploy builds install
+# requirements-base.txt plus only the per-service extras they need —
+# see .devops/Dockerfile and .devops/docker-compose.yml.
+-r requirements-base.txt
+-r requirements-food.txt
+-r requirements-dev.txt
