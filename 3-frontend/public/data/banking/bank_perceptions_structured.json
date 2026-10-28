@@ -1,0 +1,542 @@
+[
+  {
+    "bank_name": "Al Rajhi Bank",
+    "summarised_perception": "A dominant, mass-market Saudi bank strongly identified with Sharia-compliant finance, seen as a safe and ubiquitous default for everyday retail banking.",
+    "strengths": [
+      {
+        "strength": "Category leadership in Islamic (Sharia-compliant) banking at scale",
+        "score": 9
+      },
+      {
+        "strength": "Mass-market penetration and wide distribution (branches/ATMs/payroll reach)",
+        "score": 9
+      },
+      {
+        "strength": "Trust and stability via incumbency/systemic importance",
+        "score": 8
+      },
+      {
+        "strength": "Strong retail banking engine (accounts, cards, personal finance, remittances)",
+        "score": 8
+      },
+      {
+        "strength": "Ability to execute nationally and roll out services broadly",
+        "score": 7
+      }
+    ],
+    "weaknesses": [
+      {
+        "weakness": "Big-bank bureaucracy and rigidity in processes",
+        "score": 8
+      },
+      {
+        "weakness": "Customer service variability at scale (queues, call centers, dispute handling)",
+        "score": 7
+      },
+      {
+        "weakness": "Digital experience perceived as functional but not highly innovative/delightful",
+        "score": 6
+      },
+      {
+        "weakness": "Conservative/traditional product and brand feel (less premium/fintech vibe)",
+        "score": 6
+      },
+      {
+        "weakness": "Compliance and controls friction (heavy KYC, strict limits, many steps)",
+        "score": 7
+      }
+    ],
+    "customer_segments": [
+      {
+        "segment": "Mainstream Saudi retail customers (everyday banking, salary accounts, transfers)",
+        "relevance_score": 10
+      },
+      {
+        "segment": "Religiously observant consumers prioritizing Sharia compliance",
+        "relevance_score": 9
+      },
+      {
+        "segment": "Families and long-term planners (home finance, stability-oriented needs)",
+        "relevance_score": 8
+      },
+      {
+        "segment": "SMEs and merchants (transactional banking, accounts, payments)",
+        "relevance_score": 7
+      },
+      {
+        "segment": "Migrant/expat remittance users",
+        "relevance_score": 7
+      }
+    ]
+  },
+  {
+    "bank_name": "SNB",
+    "summarised_perception": "SNB is perceived as a highly institutional, technocratic central bank that quietly but materially safeguards Swiss monetary stability through price stability and active currency management rather than consumer-facing services.",
+    "strengths": [
+      {
+        "strength": "Credibility and perceived competence",
+        "score": 9
+      },
+      {
+        "strength": "Decisive ability to intervene in FX markets",
+        "score": 9
+      },
+      {
+        "strength": "Swiss institutional trust halo (stability, rule of law, prudence)",
+        "score": 8
+      },
+      {
+        "strength": "Clear mandate focus on macroeconomic stability",
+        "score": 8
+      }
+    ],
+    "weaknesses": [
+      {
+        "weakness": "Controversy over FX interventions and large balance sheet/foreign reserves risks",
+        "score": 8
+      },
+      {
+        "weakness": "Negative interest rates legacy (perceived impact on savers and asset prices)",
+        "score": 8
+      },
+      {
+        "weakness": "Perceived opacity and hard-to-read communication style",
+        "score": 7
+      },
+      {
+        "weakness": "Political/ethical scrutiny of investment holdings and reputational exposure",
+        "score": 6
+      },
+      {
+        "weakness": "Structural tension between strong CHF benefits (inflation) and exporter/tourism pain",
+        "score": 7
+      }
+    ],
+    "customer_segments": [
+      {
+        "segment": "Financial markets participants (FX traders, macro investors, economists)",
+        "relevance_score": 10
+      },
+      {
+        "segment": "Swiss banks and institutional finance",
+        "relevance_score": 9
+      },
+      {
+        "segment": "Export-oriented businesses and CHF-sensitive industries",
+        "relevance_score": 8
+      },
+      {
+        "segment": "Swiss households (indirectly via mortgages, savings rates, inflation)",
+        "relevance_score": 7
+      },
+      {
+        "segment": "Policy watchers and media covering central bank credibility",
+        "relevance_score": 8
+      }
+    ]
+  },
+  {
+    "bank_name": "Alinma Bank",
+    "summarised_perception": "A modern, Saudi, Shariah-compliant full-service bank perceived as clean, dependable, and digitally enabled for mainstream retail and business needs.",
+    "strengths": [
+      {
+        "strength": "Clear Shariah-compliant / Islamic-first positioning",
+        "score": 9
+      },
+      {
+        "strength": "Modern, contemporary brand and service feel versus legacy incumbents",
+        "score": 8
+      },
+      {
+        "strength": "Mainstream full-service credibility across retail and corporate banking",
+        "score": 8
+      },
+      {
+        "strength": "Strong fit for Saudi mass-market needs and local context",
+        "score": 8
+      },
+      {
+        "strength": "Perceived stability and prudence (reassuring, conservative banking profile)",
+        "score": 7
+      }
+    ],
+    "weaknesses": [
+      {
+        "weakness": "Lower international mindshare and recognition outside Saudi Arabia",
+        "score": 7
+      },
+      {
+        "weakness": "Less distinctive emotional/lifestyle brand story (more functional than aspirational)",
+        "score": 6
+      },
+      {
+        "weakness": "Digital experience variability (app/onboarding/support friction typical of banks)",
+        "score": 6
+      },
+      {
+        "weakness": "Perceived product-structure constraints associated with strict Shariah compliance",
+        "score": 5
+      }
+    ],
+    "customer_segments": [
+      {
+        "segment": "Saudi retail customers seeking Shariah-compliant everyday banking (accounts, cards, transfers)",
+        "relevance_score": 10
+      },
+      {
+        "segment": "Families seeking home financing and long-term stability",
+        "relevance_score": 9
+      },
+      {
+        "segment": "SMEs and mid-market businesses needing local Islamic banking services",
+        "relevance_score": 8
+      },
+      {
+        "segment": "Corporate clients requiring mainstream corporate banking and financing",
+        "relevance_score": 7
+      },
+      {
+        "segment": "Government-adjacent and semi-institutional ecosystems",
+        "relevance_score": 7
+      },
+      {
+        "segment": "Digitally capable mainstream users (app users, not necessarily fintech early adopters)",
+        "relevance_score": 7
+      }
+    ]
+  },
+  {
+    "bank_name": "Riyad Bank",
+    "summarised_perception": "A large, established Saudi incumbent bank perceived as stable, mainstream, and strong in corporate/government-adjacent banking while serving retail customers with a traditional, compliance-forward approach.",
+    "strengths": [
+      {
+        "strength": "Incumbent credibility and perceived safety",
+        "score": 9
+      },
+      {
+        "strength": "Corporate banking strength and relationship-led capabilities",
+        "score": 9
+      },
+      {
+        "strength": "Broad network and market reach (branches/ATMs/employer ties)",
+        "score": 8
+      },
+      {
+        "strength": "Full-service capability breadth across retail/SME/corporate/treasury",
+        "score": 8
+      },
+      {
+        "strength": "Institutional professionalism and strong compliance posture",
+        "score": 8
+      }
+    ],
+    "weaknesses": [
+      {
+        "weakness": "Process heaviness and bureaucracy (onboarding/approvals/paperwork)",
+        "score": 8
+      },
+      {
+        "weakness": "Customer service variability and responsiveness inconsistency",
+        "score": 7
+      },
+      {
+        "weakness": "Digital experience perceived as less slick than digital-first challengers",
+        "score": 6
+      },
+      {
+        "weakness": "Perceived opacity around fees/terms (common big-bank complaint pattern)",
+        "score": 6
+      },
+      {
+        "weakness": "Conservative risk appetite leading to tougher approvals for some customers",
+        "score": 7
+      }
+    ],
+    "customer_segments": [
+      {
+        "segment": "Salary-account retail customers",
+        "relevance_score": 9
+      },
+      {
+        "segment": "Affluent and mass affluent customers",
+        "relevance_score": 7
+      },
+      {
+        "segment": "SMEs",
+        "relevance_score": 8
+      },
+      {
+        "segment": "Large corporates",
+        "relevance_score": 9
+      },
+      {
+        "segment": "Government-related ecosystem (contractors, large employers, entities preferring established counterparties)",
+        "relevance_score": 8
+      },
+      {
+        "segment": "Expats (via retail and payroll ecosystem)",
+        "relevance_score": 6
+      }
+    ]
+  },
+  {
+    "bank_name": "SAB",
+    "summarised_perception": "A large, mainstream, established Saudi bank perceived as a serious, systemically important incumbent with strong corporate capabilities and ongoing (but traditional) digitization.",
+    "strengths": [
+      {
+        "strength": "Credibility and trust (safe pair of hands)",
+        "score": 9
+      },
+      {
+        "strength": "Corporate and SME banking capability",
+        "score": 9
+      },
+      {
+        "strength": "Infrastructure, scale, and service breadth",
+        "score": 8
+      },
+      {
+        "strength": "Stability and institutional professionalism/compliance",
+        "score": 8
+      },
+      {
+        "strength": "Perceived international linkage/global standards",
+        "score": 7
+      }
+    ],
+    "weaknesses": [
+      {
+        "weakness": "Less emotionally engaging/functional brand",
+        "score": 7
+      },
+      {
+        "weakness": "Process-heavy bureaucracy and documentation",
+        "score": 8
+      },
+      {
+        "weakness": "Slower turnaround vs digital-first competitors",
+        "score": 7
+      },
+      {
+        "weakness": "Digital experience not always best-in-class",
+        "score": 6
+      },
+      {
+        "weakness": "Service consistency variability across channels/branches",
+        "score": 6
+      }
+    ],
+    "customer_segments": [
+      {
+        "segment": "Salaried professionals (primary banking: accounts/cards/loans)",
+        "relevance_score": 8
+      },
+      {
+        "segment": "SMEs and mid-market businesses (payments/payroll/working capital)",
+        "relevance_score": 9
+      },
+      {
+        "segment": "Large corporates and institutions (treasury/trade/financing)",
+        "relevance_score": 9
+      },
+      {
+        "segment": "Trust- and stability-seeking customers prioritizing breadth over novelty",
+        "relevance_score": 8
+      },
+      {
+        "segment": "Affluent/business clients preferring relationship-managed service",
+        "relevance_score": 7
+      }
+    ]
+  },
+  {
+    "bank_name": "BSF",
+    "summarised_perception": "An established mid-to-large Saudi incumbent bank with an international/corporate feel, perceived as reliable and business-capable rather than flashy or disruptive.",
+    "strengths": [
+      {
+        "strength": "International/legacy (Fransi) association and cross-border credibility",
+        "score": 8
+      },
+      {
+        "strength": "Corporate and SME banking capability (payroll, trade, structured needs)",
+        "score": 8
+      },
+      {
+        "strength": "Stability and institutional maturity",
+        "score": 8
+      },
+      {
+        "strength": "Compliance-forward, risk-aware positioning",
+        "score": 7
+      }
+    ],
+    "weaknesses": [
+      {
+        "weakness": "Lower consumer top-of-mind excitement / weak lifestyle branding",
+        "score": 7
+      },
+      {
+        "weakness": "Traditional-bank friction (paperwork, process heaviness, branch dependency)",
+        "score": 7
+      },
+      {
+        "weakness": "Digital experience not perceived as category-leading",
+        "score": 6
+      },
+      {
+        "weakness": "Name ambiguity outside core market (BSF acronym confusion)",
+        "score": 6
+      }
+    ],
+    "customer_segments": [
+      {
+        "segment": "Corporate clients (mid-market to large), especially with trade/international needs",
+        "relevance_score": 9
+      },
+      {
+        "segment": "SMEs needing payroll, financing, and conventional banking infrastructure",
+        "relevance_score": 9
+      },
+      {
+        "segment": "Affluent professionals preferring established institutions over app-first challengers",
+        "relevance_score": 7
+      },
+      {
+        "segment": "Mainstream retail customers prioritizing stability and branch access",
+        "relevance_score": 7
+      }
+    ]
+  },
+  {
+    "bank_name": "ANB",
+    "summarised_perception": "A large, established Saudi retail-and-corporate bank perceived as traditional, mainstream, and institutionally safe rather than innovation-led.",
+    "strengths": [
+      {
+        "strength": "Trust and longevity (established, credible incumbent)",
+        "score": 9
+      },
+      {
+        "strength": "Stability and conservative risk profile",
+        "score": 9
+      },
+      {
+        "strength": "Breadth of standard retail and corporate banking services",
+        "score": 8
+      },
+      {
+        "strength": "Local embeddedness and familiarity with Saudi banking norms",
+        "score": 8
+      },
+      {
+        "strength": "Corporate/SME relationships and business banking footprint",
+        "score": 7
+      }
+    ],
+    "weaknesses": [
+      {
+        "weakness": "Not perceived as among the most digitally advanced",
+        "score": 7
+      },
+      {
+        "weakness": "Process friction/bureaucracy and slower turnaround for requests",
+        "score": 7
+      },
+      {
+        "weakness": "Less distinctive brand identity (blends into category)",
+        "score": 6
+      },
+      {
+        "weakness": "Customer service variability typical of large banks",
+        "score": 6
+      }
+    ],
+    "customer_segments": [
+      {
+        "segment": "Mainstream retail customers prioritizing stability (salary accounts, everyday banking)",
+        "relevance_score": 9
+      },
+      {
+        "segment": "Families and established professionals",
+        "relevance_score": 8
+      },
+      {
+        "segment": "SMEs needing conventional banking relationships and credit facilities",
+        "relevance_score": 8
+      },
+      {
+        "segment": "Corporate clients requiring trade services and structured banking support",
+        "relevance_score": 8
+      },
+      {
+        "segment": "Customers who value in-branch support or conventional service models",
+        "relevance_score": 7
+      }
+    ]
+  },
+  {
+    "bank_name": "SAIB",
+    "summarised_perception": "SAIB is perceived as a smaller-to-mid-sized, traditional and pragmatic bank focused on reliable everyday and SME banking rather than standout innovation or premium positioning.",
+    "strengths": [
+      {
+        "strength": "Reliability and stability (conservative, 'no-drama' banking)",
+        "score": 8
+      },
+      {
+        "strength": "Relationship/branch-led service and human account management",
+        "score": 7
+      },
+      {
+        "strength": "Practical coverage of core banking needs (retail + SME basics)",
+        "score": 7
+      },
+      {
+        "strength": "Local/regional familiarity within its operating footprint",
+        "score": 6
+      }
+    ],
+    "weaknesses": [
+      {
+        "weakness": "Low brand salience (not top-of-mind vs major incumbents)",
+        "score": 8
+      },
+      {
+        "weakness": "Limited differentiation (blends into 'standard bank' set)",
+        "score": 7
+      },
+      {
+        "weakness": "Digital/product innovation not strongly associated (UX not seen as leading)",
+        "score": 7
+      },
+      {
+        "weakness": "Potential service variability across branches/teams",
+        "score": 6
+      }
+    ],
+    "customer_segments": [
+      {
+        "segment": "Mainstream retail customers seeking standard, functional banking",
+        "relevance_score": 8
+      },
+      {
+        "segment": "SMEs and small business owners valuing relationship banking and practical services",
+        "relevance_score": 8
+      },
+      {
+        "segment": "Conservative/risk-averse customers prioritizing stability and familiarity",
+        "relevance_score": 7
+      },
+      {
+        "segment": "Customers within SAIB's geographic footprint who value local convenience/branches",
+        "relevance_score": 7
+      },
+      {
+        "segment": "Gen Z / app-first consumers seeking slick digital-first experiences",
+        "relevance_score": 3
+      },
+      {
+        "segment": "High-end wealth / premium lifestyle banking seekers",
+        "relevance_score": 3
+      }
+    ]
+  }
+]

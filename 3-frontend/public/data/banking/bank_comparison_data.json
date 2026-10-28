@@ -1,0 +1,318 @@
+{
+  "comparison_metadata": {
+    "strength_dimensions": [
+      "Trust",
+      "Scale",
+      "Islamic",
+      "Corporate",
+      "SME",
+      "Digital",
+      "Compliance",
+      "Global"
+    ],
+    "weakness_dimensions": [
+      "Bureaucracy",
+      "Service",
+      "Digital UX",
+      "Brand",
+      "Transparency",
+      "Controls",
+      "Innovation",
+      "Reputation"
+    ],
+    "customer_segments": [
+      "Mass Retail",
+      "Religious",
+      "Families",
+      "SMEs",
+      "Corporates",
+      "Affluent",
+      "Expats",
+      "Institutions",
+      "Markets",
+      "Exporters"
+    ]
+  },
+  "banks_comparison": [
+    {
+      "bank_name": "Al Rajhi Bank",
+      "strength_scores": {
+        "Trust": 8,
+        "Scale": 9,
+        "Islamic": 9,
+        "Corporate": 5,
+        "SME": 7,
+        "Digital": 6,
+        "Compliance": 7,
+        "Global": 3
+      },
+      "weakness_scores": {
+        "Bureaucracy": 8,
+        "Service": 7,
+        "Digital UX": 6,
+        "Brand": 6,
+        "Transparency": 4,
+        "Controls": 7,
+        "Innovation": 6,
+        "Reputation": 2
+      },
+      "segment_relevance": {
+        "Mass Retail": 10,
+        "Religious": 9,
+        "Families": 8,
+        "SMEs": 7,
+        "Corporates": 5,
+        "Affluent": 4,
+        "Expats": 7,
+        "Institutions": 3,
+        "Markets": 1,
+        "Exporters": 2
+      }
+    },
+    {
+      "bank_name": "SNB",
+      "strength_scores": {
+        "Trust": 9,
+        "Scale": 8,
+        "Islamic": 0,
+        "Corporate": 0,
+        "SME": 0,
+        "Digital": 0,
+        "Compliance": 8,
+        "Global": 9
+      },
+      "weakness_scores": {
+        "Bureaucracy": 0,
+        "Service": 0,
+        "Digital UX": 0,
+        "Brand": 0,
+        "Transparency": 7,
+        "Controls": 0,
+        "Innovation": 0,
+        "Reputation": 8
+      },
+      "segment_relevance": {
+        "Mass Retail": 0,
+        "Religious": 0,
+        "Families": 0,
+        "SMEs": 0,
+        "Corporates": 0,
+        "Affluent": 0,
+        "Expats": 0,
+        "Institutions": 9,
+        "Markets": 10,
+        "Exporters": 8
+      }
+    },
+    {
+      "bank_name": "Alinma Bank",
+      "strength_scores": {
+        "Trust": 7,
+        "Scale": 7,
+        "Islamic": 9,
+        "Corporate": 7,
+        "SME": 8,
+        "Digital": 7,
+        "Compliance": 7,
+        "Global": 3
+      },
+      "weakness_scores": {
+        "Bureaucracy": 5,
+        "Service": 5,
+        "Digital UX": 6,
+        "Brand": 6,
+        "Transparency": 3,
+        "Controls": 4,
+        "Innovation": 5,
+        "Reputation": 2
+      },
+      "segment_relevance": {
+        "Mass Retail": 10,
+        "Religious": 10,
+        "Families": 9,
+        "SMEs": 8,
+        "Corporates": 7,
+        "Affluent": 4,
+        "Expats": 3,
+        "Institutions": 4,
+        "Markets": 1,
+        "Exporters": 2
+      }
+    },
+    {
+      "bank_name": "Riyad Bank",
+      "strength_scores": {
+        "Trust": 9,
+        "Scale": 8,
+        "Islamic": 4,
+        "Corporate": 9,
+        "SME": 8,
+        "Digital": 6,
+        "Compliance": 8,
+        "Global": 5
+      },
+      "weakness_scores": {
+        "Bureaucracy": 8,
+        "Service": 7,
+        "Digital UX": 6,
+        "Brand": 6,
+        "Transparency": 6,
+        "Controls": 6,
+        "Innovation": 6,
+        "Reputation": 2
+      },
+      "segment_relevance": {
+        "Mass Retail": 9,
+        "Religious": 4,
+        "Families": 6,
+        "SMEs": 8,
+        "Corporates": 9,
+        "Affluent": 7,
+        "Expats": 6,
+        "Institutions": 8,
+        "Markets": 2,
+        "Exporters": 3
+      }
+    },
+    {
+      "bank_name": "SAB",
+      "strength_scores": {
+        "Trust": 9,
+        "Scale": 8,
+        "Islamic": 4,
+        "Corporate": 9,
+        "SME": 9,
+        "Digital": 6,
+        "Compliance": 8,
+        "Global": 7
+      },
+      "weakness_scores": {
+        "Bureaucracy": 8,
+        "Service": 6,
+        "Digital UX": 6,
+        "Brand": 7,
+        "Transparency": 4,
+        "Controls": 5,
+        "Innovation": 6,
+        "Reputation": 2
+      },
+      "segment_relevance": {
+        "Mass Retail": 8,
+        "Religious": 3,
+        "Families": 6,
+        "SMEs": 9,
+        "Corporates": 9,
+        "Affluent": 7,
+        "Expats": 4,
+        "Institutions": 7,
+        "Markets": 2,
+        "Exporters": 3
+      }
+    },
+    {
+      "bank_name": "BSF",
+      "strength_scores": {
+        "Trust": 8,
+        "Scale": 7,
+        "Islamic": 3,
+        "Corporate": 8,
+        "SME": 8,
+        "Digital": 6,
+        "Compliance": 7,
+        "Global": 8
+      },
+      "weakness_scores": {
+        "Bureaucracy": 7,
+        "Service": 5,
+        "Digital UX": 6,
+        "Brand": 7,
+        "Transparency": 4,
+        "Controls": 4,
+        "Innovation": 6,
+        "Reputation": 2
+      },
+      "segment_relevance": {
+        "Mass Retail": 7,
+        "Religious": 3,
+        "Families": 5,
+        "SMEs": 9,
+        "Corporates": 9,
+        "Affluent": 7,
+        "Expats": 4,
+        "Institutions": 6,
+        "Markets": 2,
+        "Exporters": 3
+      }
+    },
+    {
+      "bank_name": "ANB",
+      "strength_scores": {
+        "Trust": 9,
+        "Scale": 7,
+        "Islamic": 3,
+        "Corporate": 8,
+        "SME": 7,
+        "Digital": 5,
+        "Compliance": 7,
+        "Global": 4
+      },
+      "weakness_scores": {
+        "Bureaucracy": 7,
+        "Service": 6,
+        "Digital UX": 7,
+        "Brand": 6,
+        "Transparency": 4,
+        "Controls": 4,
+        "Innovation": 7,
+        "Reputation": 2
+      },
+      "segment_relevance": {
+        "Mass Retail": 9,
+        "Religious": 3,
+        "Families": 8,
+        "SMEs": 8,
+        "Corporates": 8,
+        "Affluent": 5,
+        "Expats": 4,
+        "Institutions": 5,
+        "Markets": 1,
+        "Exporters": 2
+      }
+    },
+    {
+      "bank_name": "SAIB",
+      "strength_scores": {
+        "Trust": 8,
+        "Scale": 4,
+        "Islamic": 2,
+        "Corporate": 4,
+        "SME": 7,
+        "Digital": 4,
+        "Compliance": 6,
+        "Global": 2
+      },
+      "weakness_scores": {
+        "Bureaucracy": 5,
+        "Service": 6,
+        "Digital UX": 7,
+        "Brand": 8,
+        "Transparency": 4,
+        "Controls": 3,
+        "Innovation": 7,
+        "Reputation": 2
+      },
+      "segment_relevance": {
+        "Mass Retail": 8,
+        "Religious": 2,
+        "Families": 5,
+        "SMEs": 8,
+        "Corporates": 4,
+        "Affluent": 3,
+        "Expats": 3,
+        "Institutions": 3,
+        "Markets": 1,
+        "Exporters": 1
+      }
+    }
+  ]
+}
