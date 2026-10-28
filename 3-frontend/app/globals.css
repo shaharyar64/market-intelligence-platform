@@ -1,0 +1,454 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Hide scrollbar but allow scroll */
+.custom-scroll::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+.custom-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ── Page background — gradient in light, deep navy in dark ───────────── */
+html {
+  background: linear-gradient(135deg, #c7d9ff 0%, #e8f0ff 35%, #ede5ff 65%, #fbd6f4 100%);
+  min-height: 100%;
+}
+html.dark {
+  background: #060e1a;
+}
+
+/* ── Logo: white text → dark, colored X keeps its original hue ─────── */
+/* invert(1) flips white→black; hue-rotate(180deg) rotates hue back so
+   coloured elements (the X) end up at their original hue, just inverted
+   in lightness — still clearly coloured, not black.                    */
+.sidebar-logo { transition: filter 0.3s; }
+html:not(.dark) .sidebar-logo { filter: invert(1) hue-rotate(180deg); }
+
+/* ── Theme variables ─────────────────────────────────────────────────── */
+:root {
+  --sidebar-bg:    #ffffff;
+  --sidebar-bd:    rgba(0,0,0,0.08);
+  --topbar-bg:     rgba(255,255,255,0.85);
+  --topbar-bd:     rgba(0,0,0,0.06);
+  --card-bg:       rgba(255,255,255,0.55);
+  --card-bg-2:     rgba(255,255,255,0.40);
+  --card-bd:       rgba(0,0,0,0.09);
+  --card-shadow:   0 4px 24px rgba(100,116,139,0.14);
+  --blur:          blur(20px);
+  --nav-inactive:  #475569;
+  --nav-hover-bg:  rgba(0,0,0,0.04);
+  --nav-hover-tx:  #0f172a;
+  --nav-active-bg: rgba(59,130,246,0.1);
+  --nav-active-tx: #1d4ed8;
+  --title-tx:      #0f172a;
+  --body-tx:       #334155;
+  --muted-tx:      #526074;
+  --accent-tx:     #1d4ed8;
+  --accent-from:   #3b82f6;
+  --accent-to:     #1d4ed8;
+  --accent2-from:  #0891b2;
+  --accent2-to:    #03b7dc;
+  --accent-soft:   rgba(59,130,246,0.10);
+  --accent-soft-bd:rgba(59,130,246,0.28);
+  --accent-shadow: rgba(59,130,246,0.30);
+  --preview-tx:    #92400e;
+  --error-tx:      #b91c1c;
+  --select-bg:     rgba(255,255,255,0.8);
+  --select-fg:     #0f172a;
+  --dropdown-bg:   #ffffff;
+  --dropdown-bg-2: #f8fafc;
+  --dropdown-bd:   rgba(0,0,0,0.1);
+  --tooltip-bg:    rgba(255,255,255,0.96);
+  --tooltip-tx:    #0f172a;
+  --tooltip-bd:    rgba(0,0,0,0.08);
+
+  --fi-growth:        #059669;
+  --fi-growth-tx:     #065f46;
+  --fi-growth-soft:   rgba(16,185,129,0.12);
+  --fi-growth-soft-bd:rgba(6,95,70,0.30);
+
+  --fi-mainstream:        #b45309;
+  --fi-mainstream-tx:     #92400e;
+  --fi-mainstream-soft:   rgba(245,158,11,0.14);
+  --fi-mainstream-soft-bd:rgba(146,64,14,0.30);
+
+  --fi-breakthrough:        #0d9488;
+  --fi-breakthrough-tx:     #115e59;
+  --fi-breakthrough-soft:   rgba(20,184,166,0.14);
+  --fi-breakthrough-soft-bd:rgba(17,94,89,0.30);
+
+  --fi-watchlist:        #6366f1;
+  --fi-watchlist-tx:     #4338ca;
+  --fi-watchlist-soft:   rgba(99,102,241,0.12);
+  --fi-watchlist-soft-bd:rgba(67,56,202,0.30);
+
+  --fi-solid:        #4338ca;
+  --fi-solid-tx:     #ffffff;
+  --fi-danger-tx:    #be123c;
+
+  --chart-tick:      #475569;
+  --chart-grid:      rgba(71,85,105,0.22);
+  --chart-1: #2563eb;
+  --chart-2: #0e7490;
+  --chart-3: #b45309;
+  --chart-4: #7c3aed;
+  --chart-5: #dc2626;
+  --chart-6: #475569;
+
+  --focus-ring:      #4338ca;
+  --selection-bg:    rgba(67,56,202,0.20);
+  --selection-tx:    #0f172a;
+  --scroll-thumb:    rgba(71,85,105,0.34);
+  --scroll-thumb-hv: rgba(71,85,105,0.55);
+}
+
+.dark {
+  --sidebar-bg:    #0f172a;
+  --sidebar-bd:    #1e293b;
+  --topbar-bg:     rgba(15,23,42,0.9);
+  --topbar-bd:     #1e293b;
+  --card-bg:       rgba(15,23,42,0.75);
+  --card-bg-2:     rgba(8,15,30,0.85);
+  --card-bd:       rgba(255,255,255,0.06);
+  --card-shadow:   0 8px 32px rgba(0,0,0,0.4);
+  --blur:          blur(12px);
+  --nav-inactive:  #94a3b8;
+  --nav-hover-bg:  #1e293b;
+  --nav-hover-tx:  #ffffff;
+  --nav-active-bg: rgba(59,130,246,0.12);
+  --nav-active-tx: #60a5fa;
+  --title-tx:      #f1f5f9;
+  --body-tx:       #cbd5e1;
+  --muted-tx:      #94a3b8;
+  --accent-tx:     #60a5fa;
+  --accent-from:   #60a5fa;
+  --accent-to:     #3b82f6;
+  --accent2-from:  #03b7dc;
+  --accent2-to:    #22d3ee;
+  --accent-soft:   rgba(96,165,250,0.12);
+  --accent-soft-bd:rgba(96,165,250,0.30);
+  --accent-shadow: rgba(96,165,250,0.28);
+  --preview-tx:    #fbbf24;
+  --error-tx:      #f87171;
+  --select-bg:     rgba(15,23,42,0.9);
+  --select-fg:     #ffffff;
+  --dropdown-bg:   #1e293b;
+  --dropdown-bg-2: #162032;
+  --dropdown-bd:   rgba(255,255,255,0.07);
+  --tooltip-bg:    #111827;
+  --tooltip-tx:    #f1f5f9;
+  --tooltip-bd:    rgba(255,255,255,0.06);
+
+  --fi-growth:        #10b981;
+  --fi-growth-tx:     #34d399;
+  --fi-growth-soft:   rgba(16,185,129,0.16);
+  --fi-growth-soft-bd:rgba(52,211,153,0.32);
+
+  --fi-mainstream:        #f59e0b;
+  --fi-mainstream-tx:     #fbbf24;
+  --fi-mainstream-soft:   rgba(245,158,11,0.16);
+  --fi-mainstream-soft-bd:rgba(251,191,36,0.32);
+
+  --fi-breakthrough:        #14b8a6;
+  --fi-breakthrough-tx:     #2dd4bf;
+  --fi-breakthrough-soft:   rgba(20,184,166,0.16);
+  --fi-breakthrough-soft-bd:rgba(45,212,191,0.32);
+
+  --fi-watchlist:        #818cf8;
+  --fi-watchlist-tx:     #a5b4fc;
+  --fi-watchlist-soft:   rgba(129,140,248,0.16);
+  --fi-watchlist-soft-bd:rgba(165,180,252,0.32);
+
+  --fi-solid:        #4f46e5;
+  --fi-solid-tx:     #ffffff;
+  --fi-danger-tx:    #fb7185;
+
+  --chart-tick:      #94a3b8;
+  --chart-grid:      rgba(148,163,184,0.20);
+  --chart-1: #60a5fa;
+  --chart-2: #22d3ee;
+  --chart-3: #fbbf24;
+  --chart-4: #a78bfa;
+  --chart-5: #f87171;
+  --chart-6: #94a3b8;
+
+  --focus-ring:      #a5b4fc;
+  --selection-bg:    rgba(129,140,248,0.32);
+  --selection-tx:    #f1f5f9;
+  --scroll-thumb:    rgba(148,163,184,0.28);
+  --scroll-thumb-hv: rgba(148,163,184,0.48);
+}
+
+select option {
+  background-color: var(--select-bg);
+  color:            var(--select-fg);
+}
+
+/* ── Glass card — applies to every themed card regardless of Tailwind ── */
+.bg-\[var\(--card-bg\)\],
+.bg-\[var\(--card-bg-2\)\] {
+  background: var(--card-bg) !important;
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-color: var(--card-bd) !important;
+  box-shadow: var(--card-shadow);
+}
+
+/* Chart card glass — AreaChartCard, MultiLineChartCard, BarChartCard etc. use bg-white/5 */
+.chart-card {
+  background: var(--card-bg);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--card-bd);
+  box-shadow: var(--card-shadow);
+}
+
+.pricing-compact-filters {
+  padding: 9px 10px !important;
+  gap: 7px 9px !important;
+  margin-bottom: 10px !important;
+}
+
+.pricing-compact-filters > div:not(.pricing-filter-actions):not(.pricing-filter-field):not(.pricing-filter-row-break) {
+  flex: 1 1 132px;
+  min-width: 118px;
+}
+
+.pricing-compact-filters .pricing-filter-field {
+  flex: 0 0 var(--filter-w) !important;
+  width: var(--filter-w);
+  max-width: var(--filter-w);
+  min-width: var(--filter-w) !important;
+}
+
+.pricing-compact-filters > div:not(.pricing-filter-actions) > label,
+.pricing-compact-filters .pricing-filter-field > div > label {
+  font-size: 9px !important;
+  margin-bottom: 3px !important;
+  line-height: 1.1 !important;
+}
+
+.pricing-compact-filters > div:not(.pricing-filter-actions) > button,
+.pricing-compact-filters .pricing-filter-field > div > button {
+  min-height: 32px;
+  padding: 6px 9px !important;
+  border-radius: 9px !important;
+  font-size: 11px !important;
+}
+
+.pricing-filter-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex: 0 0 auto !important;
+  min-width: auto !important;
+  align-self: flex-end;
+}
+
+.pricing-filter-row-break {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+  width: 100%;
+  min-width: 100% !important;
+  height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.pricing-table-filters {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: flex-start;
+}
+
+.pricing-table-filters .pricing-filter-field {
+  flex: 1 1 var(--filter-w) !important;
+  width: auto;
+  max-width: none;
+  min-width: 0 !important;
+}
+
+.pricing-table-filters .pricing-filter-row-break {
+  display: none;
+}
+
+.pricing-table-filters .pricing-filter-actions {
+  display: flex;
+  align-items: flex-end;
+  flex: 0 0 142px !important;
+}
+
+.pricing-table-filters .pricing-filter-actions button {
+  height: 32px !important;
+  white-space: nowrap;
+}
+
+.pricing-standard-filters {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-auto-rows: auto;
+  align-items: end;
+  justify-content: start;
+}
+
+.pricing-standard-filters > div:not(.pricing-filter-actions):not(.pricing-filter-row-break) {
+  min-width: 0;
+}
+
+.pricing-standard-filters > div:not(.pricing-filter-actions):not(.pricing-filter-row-break) > button {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+.pricing-standard-filters > div:nth-child(1),
+.pricing-standard-filters > div:nth-child(2),
+.pricing-standard-filters > div:nth-child(3) {
+  grid-column: span 2;
+}
+
+.pricing-standard-filters > div:nth-child(4),
+.pricing-standard-filters > div:nth-child(5) {
+  grid-column: span 3;
+}
+
+.pricing-standard-filters > div:nth-child(6) {
+  grid-column: span 2;
+}
+
+.pricing-standard-filters > div:nth-child(7) {
+  grid-column: span 2;
+}
+
+.pricing-standard-filters > div:nth-child(8),
+.pricing-standard-filters > div:nth-child(9) {
+  grid-column: span 2;
+}
+
+.pricing-standard-filters > div:nth-child(10) {
+  grid-column: span 2;
+}
+
+.pricing-standard-filters .pricing-filter-row-break {
+  display: none;
+}
+
+.pricing-standard-filters .pricing-filter-actions {
+  grid-column: span 2;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.pricing-standard-filters .pricing-filter-actions button {
+  min-width: 92px;
+  height: 34px !important;
+  white-space: nowrap;
+}
+
+.pricing-apply-button {
+  color: #ffffff !important;
+}
+
+/* ── Hero SKU pages filter bar ──────────────────────────────────────── */
+.hero-sku-filters {
+  display: flex !important;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.hero-sku-filters .hero-sku-filter {
+  flex: 0 0 150px;
+  width: 150px;
+  min-width: 0;
+}
+
+.hero-sku-filters .hero-sku-daterange {
+  flex: 0 0 210px;
+  width: 210px;
+}
+
+.hero-sku-filters .hero-sku-filter > div > label {
+  font-size: 10px !important;
+  margin-bottom: 2px !important;
+}
+
+.hero-sku-filters .hero-sku-filter > div > button {
+  padding: 7px 9px !important;
+  font-size: 12px !important;
+  border-radius: 10px !important;
+}
+
+.hero-sku-filters .hero-sku-currency {
+  flex: 0 0 auto;
+  align-self: flex-end;
+}
+
+.hero-sku-filters .pricing-filter-actions {
+  flex: 0 0 auto;
+  margin-left: auto;
+  align-self: flex-end;
+}
+
+/* ── Text overrides inside glass cards ──────────────────────────────── */
+.bg-\[var\(--card-bg\)\] .text-white,
+.bg-\[var\(--card-bg-2\)\] .text-white,
+.chart-card .text-white { color: var(--title-tx); }
+
+.bg-\[var\(--card-bg\)\] .text-slate-200,
+.bg-\[var\(--card-bg-2\)\] .text-slate-200,
+.chart-card .text-slate-200 { color: var(--body-tx); }
+
+.bg-\[var\(--card-bg\)\] .text-slate-400,
+.bg-\[var\(--card-bg-2\)\] .text-slate-400,
+.chart-card .text-slate-400 { color: var(--muted-tx); }
+
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+:where([role="listbox"], [role="menu"]):focus-visible { outline: none; }
+
+.composer:focus-within {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.composer textarea:focus-visible { outline: none; }
+
+::selection { background: var(--selection-bg); color: var(--selection-tx); }
+:where(input, textarea) { caret-color: var(--focus-ring); }
+
+* { scrollbar-width: thin; scrollbar-color: var(--scroll-thumb) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hv); background-clip: padding-box; }
+::-webkit-scrollbar-corner { background: transparent; }
+.custom-scroll { scrollbar-width: none; }
+
+a { text-underline-offset: 0.18em; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-pulse { animation: none !important; opacity: 0.6; }
+  .animate-spin  { animation: none !important; }
+  [data-motion-safe-only] { display: none !important; }
+  [data-motion-reduced-alt] { display: inline-flex !important; }
+}
+[data-motion-reduced-alt] { display: none; }
