@@ -1,0 +1,17 @@
+name: dashboards-ui
+
+services:
+  app:
+    platform: ${DOCKER_PLATFORM:-linux/arm64}
+    image: ${ECR_REGISTRY:-local}/${ECR_REPO_NAME:-dashboards-ui}:${IMAGE_TAG:-dev}
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
+    env_file:
+      - ../.env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
